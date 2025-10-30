@@ -23,7 +23,7 @@ dependencies {
 intellij {
     version.set("2024.1")
     type.set("IU") // IntelliJ IDEA Ultimate
-    plugins.set(listOf("com.jetbrains.php"))
+    // PHP plugin not needed - this plugin works standalone
 }
 
 tasks {
