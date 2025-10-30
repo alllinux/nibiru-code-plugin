@@ -8,18 +8,35 @@ Old Gradle 4.4.1 wrapper cached on your system doesn't support Java 23.
 ### Problem 2: "Downloading gradle-8.5-bin.zip" times out
 Network restrictions blocking access to services.gradle.org.
 
-## ⭐ EASIEST SOLUTION: Use System Gradle (Network Issues)
+### Problem 3: "Task 'buildPlugin' not found"
+Your system Gradle is too old (4.4.1). The IntelliJ Platform Gradle Plugin requires Gradle 8.0+.
 
-If Gradle wrapper download times out or you have network restrictions:
+## ⭐ RECOMMENDED SOLUTION: Upgrade System Gradle
+
+If you have Gradle 4.x or older installed:
 
 ```bash
-# Just use the build script with system Gradle
-./build.sh
+# Automated upgrade to Gradle 8.5
+./upgrade-gradle.sh
+
+# Then build the plugin
+gradle buildPlugin
 ```
 
-Or directly:
+**Or** install manually from [gradle.org/install](https://gradle.org/install/)
+
+---
+
+## Alternative Solution: Use System Gradle (Network Issues)
+
+If Gradle wrapper download times out but you already have Gradle 8+:
+
 ```bash
-gradle buildPlugin --no-daemon
+# Check your Gradle version first
+gradle --version
+
+# If it's 8.0+, use the build script
+./build.sh
 ```
 
 **This works immediately with no downloads needed!**

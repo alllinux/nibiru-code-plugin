@@ -15,7 +15,10 @@ A JetBrains IDE plugin for the Nibiru Coding Agent that enables AI-powered codin
 
 ### From Source
 
-**Prerequisites**: Internet access to download dependencies from Maven Central, Gradle Plugin Portal, and JetBrains repositories.
+**Prerequisites**:
+- Internet access to download dependencies from Maven Central, Gradle Plugin Portal, and JetBrains repositories
+- **Gradle 8.0 or higher** (run `gradle --version` to check)
+  - If you have Gradle 4.x or older, run `./upgrade-gradle.sh` after cloning
 
 1. Clone the repository:
    ```bash

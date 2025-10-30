@@ -25,9 +25,14 @@ echo "✓ Found system Gradle: $GRADLE_VERSION"
 echo ""
 
 if [ "$MAJOR_VERSION" -lt 8 ]; then
-    echo "⚠️  Warning: Gradle $GRADLE_VERSION may not fully support Java 23"
-    echo "   Recommended: Gradle 8.0 or higher"
+    echo "❌ Error: Gradle $GRADLE_VERSION is too old"
+    echo "   Required: Gradle 8.0 or higher"
     echo ""
+    echo "To upgrade Gradle, run:"
+    echo "  ./upgrade-gradle.sh"
+    echo ""
+    echo "Or install manually from: https://gradle.org/install/"
+    exit 1
 fi
 
 # Check Java version
