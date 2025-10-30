@@ -10,6 +10,8 @@ import com.intellij.util.ui.JBUI
 import com.maschinen_stockert.nibiru.services.HuggingFaceService
 import com.maschinen_stockert.nibiru.services.OllamaService
 import java.awt.BorderLayout
+import java.awt.Component
+import java.util.Locale
 import javax.swing.*
 
 class NibiruConfigurable : Configurable {
@@ -32,12 +34,12 @@ class NibiruConfigurable : Configurable {
 
     // Model selection
     private val modelProviderCombo = ComboBox(arrayOf("Ollama", "HuggingFace"))
-    private val availableModelsCombo = ComboBox<String>()
+    private val availableModelsCombo = ComboBox<ModelListEntry>()
     private val loadModelsButton = JButton("Load Models")
     private val addModelButton = JButton("Add Model")
 
     // Selected models list
-    private val selectedModelsListModel = DefaultListModel<String>()
+    private val selectedModelsListModel = DefaultListModel<ModelListEntry>()
     private val selectedModelsList = JList(selectedModelsListModel)
     private val removeModelButton = JButton("Remove")
 
@@ -99,6 +101,25 @@ class NibiruConfigurable : Configurable {
             add(availableModelsCombo)
             add(Box.createHorizontalStrut(10))
             add(addModelButton)
+        }
+
+        selectedModelsList.cellRenderer = object : DefaultListCellRenderer() {
+            override fun getListCellRendererComponent(
+                list: JList<*>,
+                value: Any?,
+                index: Int,
+                isSelected: Boolean,
+                cellHasFocus: Boolean
+            ): Component {
+                val component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
+                if (value is ModelListEntry) {
+                    val providerLabel = value.provider.replaceFirstChar { char ->
+                        if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
+                    }
+                    text = "${value.name} ($providerLabel)"
+                }
+                return component
+            }
         }
 
         val selectedModelsScrollPane = JScrollPane(selectedModelsList).apply {
@@ -235,7 +256,7 @@ class NibiruConfigurable : Configurable {
                             loadModelsButton.isEnabled = true
                             result.onSuccess { models ->
                                 models.forEach { model ->
-                                    availableModelsCombo.addItem(model.name)
+                                    availableModelsCombo.addItem(ModelListEntry(model.name, "ollama"))
                                 }
                             }.onFailure { error ->
                                 JOptionPane.showMessageDialog(
@@ -251,7 +272,7 @@ class NibiruConfigurable : Configurable {
                 "HuggingFace" -> {
                     val models = HuggingFaceService.getInstance().getAvailableModels()
                     models.forEach { model ->
-                        availableModelsCombo.addItem(model.id)
+                        availableModelsCombo.addItem(ModelListEntry(model.id, "huggingface"))
                     }
                 }
             }
@@ -259,9 +280,9 @@ class NibiruConfigurable : Configurable {
 
         // Add model button
         addModelButton.addActionListener {
-            val selectedModel = availableModelsCombo.selectedItem as? String
-            if (selectedModel != null && !selectedModelsListModel.contains(selectedModel)) {
-                selectedModelsListModel.addElement(selectedModel)
+            val selectedModel = availableModelsCombo.selectedItem as? ModelListEntry
+            if (selectedModel != null && !containsModel(selectedModel.name, selectedModel.provider)) {
+                selectedModelsListModel.addElement(selectedModel.copy(configId = null))
             }
         }
 
@@ -276,12 +297,43 @@ class NibiruConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         val settings = NibiruSettings.getInstance()
-        return ollamaUrlField.text != settings.ollamaUrl ||
-                ollamaPortField.text != settings.ollamaPort ||
-                huggingFaceUrlField.text != settings.huggingFaceUrl ||
-                String(huggingFaceTokenField.password) != settings.huggingFaceToken ||
-                mcpEndpointField.text != settings.mcpEndpointUrl ||
-                mcpPortField.text != settings.mcpPort
+        if (ollamaUrlField.text != settings.ollamaUrl ||
+            ollamaPortField.text != settings.ollamaPort ||
+            huggingFaceUrlField.text != settings.huggingFaceUrl ||
+            String(huggingFaceTokenField.password) != settings.huggingFaceToken ||
+            mcpEndpointField.text != settings.mcpEndpointUrl ||
+            mcpPortField.text != settings.mcpPort
+        ) {
+            return true
+        }
+
+        return isModelSelectionModified(settings)
+    }
+
+    private fun isModelSelectionModified(settings: NibiruSettings): Boolean {
+        if (selectedModelsListModel.size() != settings.selectedModels.size) {
+            return true
+        }
+
+        val currentEntries = (0 until selectedModelsListModel.size()).map { index ->
+            selectedModelsListModel.getElementAt(index)
+        }
+
+        val savedEntries = settings.selectedModels.map { model ->
+            ModelListEntry(model.name, model.provider, model.id)
+        }
+
+        return currentEntries.zip(savedEntries).any { (current, saved) -> current != saved }
+    }
+
+    private fun containsModel(name: String, provider: String): Boolean {
+        for (i in 0 until selectedModelsListModel.size()) {
+            val entry = selectedModelsListModel.getElementAt(i)
+            if (entry.name == name && entry.provider == provider) {
+                return true
+            }
+        }
+        return false
     }
 
     override fun apply() {
@@ -294,14 +346,18 @@ class NibiruConfigurable : Configurable {
         settings.mcpPort = mcpPortField.text
 
         // Save selected models
+        val existingConfigs = settings.selectedModels.associateBy { it.id }
         settings.selectedModels.clear()
         for (i in 0 until selectedModelsListModel.size()) {
-            val modelName = selectedModelsListModel.getElementAt(i)
+            val entry = selectedModelsListModel.getElementAt(i)
             settings.selectedModels.add(
-                ModelConfig(
-                    id = java.util.UUID.randomUUID().toString(),
-                    name = modelName,
-                    provider = if (modelName.contains("/")) "huggingface" else "ollama"
+                existingConfigs[entry.configId]?.copy(
+                    name = entry.name,
+                    provider = entry.provider
+                ) ?: ModelConfig(
+                    id = entry.configId ?: java.util.UUID.randomUUID().toString(),
+                    name = entry.name,
+                    provider = entry.provider
                 )
             )
         }
@@ -319,7 +375,21 @@ class NibiruConfigurable : Configurable {
         // Load selected models
         selectedModelsListModel.clear()
         settings.selectedModels.forEach { model ->
-            selectedModelsListModel.addElement(model.name)
+            selectedModelsListModel.addElement(
+                ModelListEntry(
+                    name = model.name,
+                    provider = model.provider,
+                    configId = model.id
+                )
+            )
         }
     }
+}
+
+private data class ModelListEntry(
+    val name: String,
+    val provider: String,
+    val configId: String? = null
+) {
+    override fun toString(): String = name
 }
