@@ -22,7 +22,7 @@
         <!-- Tool Window -->
         <toolWindow id="Nibiru Coding Agent"
                     secondary="false"
-                    icon="AllIcons.Actions.Lightning"
+                    icon="/icons/nibiru-logo.png"
                     anchor="right"
                     factoryClass="com.maschinen_stockert.nibiru.ui.NibiruToolWindowFactory"/>
 
