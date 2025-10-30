@@ -1,7 +1,7 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.21"
-    id("org.jetbrains.intellij") version "1.17.2"
+    id("org.jetbrains.kotlin.jvm") version "1.8.10"
+    id("org.jetbrains.intellij") version "1.13.3"
 }
 
 group = "com.maschinen-stockert"
@@ -31,7 +31,11 @@ tasks {
     }
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions {
+            jvmTarget = "17"
+            apiVersion = "1.8"
+            languageVersion = "1.8"
+        }
     }
 
     patchPluginXml {
