@@ -1,24 +1,11 @@
 import org.gradle.api.tasks.Delete
-
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url = uri("https://cache-redirector.jetbrains.com/maven-central") }
-        maven { url = uri("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2") }
-    }
-    dependencies {
-        val kotlinVersion: String by project
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    }
-}
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.16.1"
+    kotlin("jvm")
+    id("org.jetbrains.intellij")
 }
-
-apply(plugin = "base")
-apply(plugin = "org.jetbrains.kotlin.jvm")
 
 val pluginGroup: String by project
 val pluginVersion: String by project
@@ -32,6 +19,7 @@ version = pluginVersion
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo1.maven.org/maven2") }
 }
 
 dependencies {
@@ -51,7 +39,7 @@ tasks {
         targetCompatibility = "17"
     }
 
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "17"
         }
@@ -74,6 +62,6 @@ tasks {
     }
 
     register<Delete>("clean") {
-        delete(buildDir)
+        delete(layout.buildDirectory)
     }
 }
