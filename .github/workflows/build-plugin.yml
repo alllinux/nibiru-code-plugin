@@ -1,0 +1,49 @@
+name: Build Nibiru Plugin
+
+on:
+  push:
+    branches: [ main, develop, 'claude/**' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build plugin
+        run: ./gradlew buildPlugin --no-daemon
+
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nibiru-code-plugin
+          path: build/distributions/*.zip
+          retention-days: 30
+
+      - name: Build summary
+        run: |
+          echo "### ✅ Build Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Plugin built successfully. Download it from the Artifacts section above." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Installation:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the artifact zip" >> $GITHUB_STEP_SUMMARY
+          echo "2. Extract it to get the plugin zip file" >> $GITHUB_STEP_SUMMARY
+          echo "3. In IntelliJ/PHPStorm: Settings → Plugins → ⚙️ → Install Plugin from Disk" >> $GITHUB_STEP_SUMMARY
+          echo "4. Select the downloaded plugin zip" >> $GITHUB_STEP_SUMMARY
+          echo "5. Restart IDE" >> $GITHUB_STEP_SUMMARY
