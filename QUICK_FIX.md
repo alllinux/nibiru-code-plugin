@@ -1,17 +1,49 @@
-# Quick Fix for "Could not determine java version from '23.0.2'" Error
+# Quick Fix for Build Issues
 
-## Problem
+## Common Problems
 
-You're seeing this error:
+### Problem 1: "Could not determine java version from '23.0.2'"
+Old Gradle 4.4.1 wrapper cached on your system doesn't support Java 23.
+
+### Problem 2: "Downloading gradle-8.5-bin.zip" times out
+Network restrictions blocking access to services.gradle.org.
+
+### Problem 3: "Task 'buildPlugin' not found"
+Your system Gradle is too old (4.4.1). The IntelliJ Platform Gradle Plugin requires Gradle 8.0+.
+
+## ⭐ RECOMMENDED SOLUTION: Upgrade System Gradle
+
+If you have Gradle 4.x or older installed:
+
+```bash
+# Automated upgrade to Gradle 8.5
+./upgrade-gradle.sh
+
+# Then build the plugin
+gradle buildPlugin
 ```
-FAILURE: Build failed with an exception.
-* What went wrong:
-Could not determine java version from '23.0.2'.
+
+**Or** install manually from [gradle.org/install](https://gradle.org/install/)
+
+---
+
+## Alternative Solution: Use System Gradle (Network Issues)
+
+If Gradle wrapper download times out but you already have Gradle 8+:
+
+```bash
+# Check your Gradle version first
+gradle --version
+
+# If it's 8.0+, use the build script
+./build.sh
 ```
 
-This happens because an old Gradle 4.4.1 wrapper is cached on your system, which doesn't support Java 23.
+**This works immediately with no downloads needed!**
 
-## Solution: Choose ONE of the following methods
+---
+
+## Other Solutions: Choose ONE of the following methods
 
 ### Method 1: Delete Old Gradle Cache (Recommended)
 
