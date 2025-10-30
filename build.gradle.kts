@@ -1,28 +1,45 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://cache-redirector.jetbrains.com/maven-central") }
+        maven { url = uri("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2") }
+    }
+    dependencies {
+        val kotlinVersion: String by project
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    }
+}
+
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.0"
     id("org.jetbrains.intellij") version "1.16.1"
 }
 
 apply(plugin = "base")
+apply(plugin = "org.jetbrains.kotlin.jvm")
 
-group = "com.maschinen-stockert"
-version = "1.0.0"
+val pluginGroup: String by project
+val pluginVersion: String by project
+val platformType: String by project
+val platformVersion: String by project
+val pluginSinceBuild: String by project
+val pluginUntilBuild: String by project
+
+group = pluginGroup
+version = pluginVersion
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
 
 intellij {
-    version.set("2024.1")
-    type.set("IU") // IntelliJ IDEA Ultimate
+    version.set(platformVersion)
+    type.set(platformType) // IntelliJ IDEA Ultimate
     // PHP plugin not needed - this plugin works standalone
 }
 
@@ -39,8 +56,9 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("241")
-        untilBuild.set("243.*")
+        sinceBuild.set(pluginSinceBuild)
+        // Target the IntelliJ 2024.2 (build 252) line and allow future bugfix releases
+        untilBuild.set(pluginUntilBuild)
     }
 
     signPlugin {
