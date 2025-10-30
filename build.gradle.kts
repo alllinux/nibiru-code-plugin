@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Delete
+
 buildscript {
     repositories {
         mavenCentral()
@@ -69,5 +71,9 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
+    }
+
+    register<Delete>("clean") {
+        delete(buildDir)
     }
 }
