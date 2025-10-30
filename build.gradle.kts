@@ -21,7 +21,7 @@ dependencies {
 }
 
 intellij {
-    version.set("2024.1")
+    version.set("2024.2")
     type.set("IU") // IntelliJ IDEA Ultimate
     // PHP plugin not needed - this plugin works standalone
 }
@@ -40,7 +40,8 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("241")
-        untilBuild.set("243.*")
+        // Target the IntelliJ 2024.2 (build 252) line and allow future bugfix releases
+        untilBuild.set("252.*")
     }
 
     signPlugin {
