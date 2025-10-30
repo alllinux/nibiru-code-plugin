@@ -4,6 +4,8 @@ plugins {
     id("org.jetbrains.intellij") version "1.10.0"
 }
 
+apply(plugin = "base")
+
 group = "com.maschinen-stockert"
 version = "1.0.0"
 
