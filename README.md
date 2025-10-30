@@ -15,6 +15,8 @@ A JetBrains IDE plugin for the Nibiru Coding Agent that enables AI-powered codin
 
 ### From Source
 
+**Prerequisites**: Internet access to download dependencies from Maven Central, Gradle Plugin Portal, and JetBrains repositories.
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/alllinux/nibiru-code-plugin.git
@@ -23,7 +25,14 @@ A JetBrains IDE plugin for the Nibiru Coding Agent that enables AI-powered codin
 
 2. Build the plugin:
    ```bash
+   # Option 1: Use Gradle wrapper (downloads Gradle 8.5)
    ./gradlew buildPlugin
+
+   # Option 2: Use system Gradle (if you have Gradle 8+ installed)
+   gradle buildPlugin
+
+   # Option 3: Use the build script
+   ./build.sh
    ```
 
 3. The plugin will be generated in `build/distributions/`
@@ -31,6 +40,10 @@ A JetBrains IDE plugin for the Nibiru Coding Agent that enables AI-powered codin
 4. Install in your IDE:
    - Go to `Settings/Preferences` → `Plugins` → `⚙️` → `Install Plugin from Disk...`
    - Select the generated `.zip` file
+
+**Troubleshooting**: If you encounter build errors, see:
+- [QUICK_FIX.md](QUICK_FIX.md) - For Java version issues
+- [NETWORK_TROUBLESHOOTING.md](NETWORK_TROUBLESHOOTING.md) - For network/proxy issues
 
 ## Configuration
 

@@ -1,17 +1,32 @@
-# Quick Fix for "Could not determine java version from '23.0.2'" Error
+# Quick Fix for Build Issues
 
-## Problem
+## Common Problems
 
-You're seeing this error:
+### Problem 1: "Could not determine java version from '23.0.2'"
+Old Gradle 4.4.1 wrapper cached on your system doesn't support Java 23.
+
+### Problem 2: "Downloading gradle-8.5-bin.zip" times out
+Network restrictions blocking access to services.gradle.org.
+
+## ⭐ EASIEST SOLUTION: Use System Gradle (Network Issues)
+
+If Gradle wrapper download times out or you have network restrictions:
+
+```bash
+# Just use the build script with system Gradle
+./build.sh
 ```
-FAILURE: Build failed with an exception.
-* What went wrong:
-Could not determine java version from '23.0.2'.
+
+Or directly:
+```bash
+gradle buildPlugin --no-daemon
 ```
 
-This happens because an old Gradle 4.4.1 wrapper is cached on your system, which doesn't support Java 23.
+**This works immediately with no downloads needed!**
 
-## Solution: Choose ONE of the following methods
+---
+
+## Other Solutions: Choose ONE of the following methods
 
 ### Method 1: Delete Old Gradle Cache (Recommended)
 
