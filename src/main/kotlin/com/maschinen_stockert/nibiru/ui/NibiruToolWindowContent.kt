@@ -1,5 +1,6 @@
 package com.maschinen_stockert.nibiru.ui
 
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
@@ -11,6 +12,7 @@ import com.maschinen_stockert.nibiru.services.MCPService
 import com.maschinen_stockert.nibiru.services.OllamaService
 import com.maschinen_stockert.nibiru.settings.ModelPipeline
 import com.maschinen_stockert.nibiru.settings.NibiruSettings
+import com.maschinen_stockert.nibiru.settings.NibiruConfigurable
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -78,10 +80,15 @@ class NibiruToolWindowContent(private val project: Project) {
 
         statusLabel = JBLabel("Ready")
 
+        val configureButton = JButton("Configure Services…").apply {
+            addActionListener { openSettings() }
+        }
+
         val controlPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(executeButton)
             add(refreshPipelineButton)
             add(mcpCommandsButton)
+            add(configureButton)
             add(Box.createHorizontalStrut(20))
             add(JBLabel("Status: "))
             add(statusLabel)
@@ -104,6 +111,11 @@ class NibiruToolWindowContent(private val project: Project) {
     }
 
     fun getContent(): JComponent = mainPanel
+
+    private fun openSettings() {
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, NibiruConfigurable::class.java)
+        modelPipelinePanel.refresh()
+    }
 
     private fun executePipeline() {
         val input = inputTextArea.text.trim()
@@ -215,7 +227,7 @@ class ModelPipelinePanel : JPanel() {
 
         addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
-                if (SwingUtilities.isRightButton(e)) {
+                if (SwingUtilities.isRightMouseButton(e)) {
                     showContextMenu(e.x, e.y)
                 }
             }

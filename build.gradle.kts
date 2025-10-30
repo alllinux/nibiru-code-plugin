@@ -1,28 +1,35 @@
+import org.gradle.api.tasks.Delete
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.0"
-    id("org.jetbrains.intellij") version "1.16.1"
+    kotlin("jvm")
+    id("org.jetbrains.intellij")
 }
 
-apply(plugin = "base")
+val pluginGroup: String by project
+val pluginVersion: String by project
+val platformType: String by project
+val platformVersion: String by project
+val pluginSinceBuild: String by project
+val pluginUntilBuild: String by project
 
-group = "com.maschinen-stockert"
-version = "1.0.0"
+group = pluginGroup
+version = pluginVersion
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo1.maven.org/maven2") }
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
 
 intellij {
-    version.set("2024.1")
-    type.set("IU") // IntelliJ IDEA Ultimate
+    version.set(platformVersion)
+    type.set(platformType) // IntelliJ IDEA Ultimate
     // PHP plugin not needed - this plugin works standalone
 }
 
@@ -32,15 +39,16 @@ tasks {
         targetCompatibility = "17"
     }
 
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "17"
         }
     }
 
     patchPluginXml {
-        sinceBuild.set("241")
-        untilBuild.set("243.*")
+        sinceBuild.set(pluginSinceBuild)
+        // Target the IntelliJ 2024.2 (build 252) line and allow future bugfix releases
+        untilBuild.set(pluginUntilBuild)
     }
 
     signPlugin {
@@ -51,5 +59,9 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
+    }
+
+    register<Delete>("clean") {
+        delete(layout.buildDirectory)
     }
 }
