@@ -249,7 +249,7 @@ class NibiruConfigurable : Configurable {
                     }
                 }
                 "HuggingFace" -> {
-                    val models = HuggingFaceService.getAvailableModels()
+                    val models = HuggingFaceService.getInstance().getAvailableModels()
                     models.forEach { model ->
                         availableModelsCombo.addItem(model.id)
                     }

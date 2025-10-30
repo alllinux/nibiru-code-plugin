@@ -215,7 +215,7 @@ class ModelPipelinePanel : JPanel() {
 
         addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
-                if (SwingUtilities.isRightButton(e)) {
+                if (SwingUtilities.isRightMouseButton(e)) {
                     showContextMenu(e.x, e.y)
                 }
             }
