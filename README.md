@@ -13,12 +13,25 @@ A JetBrains IDE plugin for the Nibiru Coding Agent that enables AI-powered codin
 
 ## Installation
 
-### From Source
+### Option 1: Download Pre-built Plugin (Recommended for Network Issues)
+
+If you have network restrictions or build issues, use GitHub Actions to build the plugin:
+
+1. Go to the [GitHub Actions page](https://github.com/alllinux/nibiru-code-plugin/actions)
+2. Click the latest successful workflow run
+3. Download the `nibiru-code-plugin` artifact
+4. Extract and install in your IDE
+
+See [BUILD_WITH_GITHUB_ACTIONS.md](BUILD_WITH_GITHUB_ACTIONS.md) for detailed instructions.
+
+### Option 2: Build from Source
 
 **Prerequisites**:
 - Internet access to download dependencies from Maven Central, Gradle Plugin Portal, and JetBrains repositories
 - **Gradle 8.0 or higher** (run `gradle --version` to check)
   - If you have Gradle 4.x or older, run `./upgrade-gradle.sh` after cloning
+
+**Diagnostic**: Run `./diagnose-network.sh` to test if your network allows Gradle to download dependencies
 
 1. Clone the repository:
    ```bash
@@ -28,13 +41,13 @@ A JetBrains IDE plugin for the Nibiru Coding Agent that enables AI-powered codin
 
 2. Build the plugin:
    ```bash
-   # Option 1: Use Gradle wrapper (downloads Gradle 8.5)
+   # Option A: Use Gradle wrapper (downloads Gradle 8.5)
    ./gradlew buildPlugin
 
-   # Option 2: Use system Gradle (if you have Gradle 8+ installed)
+   # Option B: Use system Gradle (if you have Gradle 8+ installed)
    gradle buildPlugin
 
-   # Option 3: Use the build script
+   # Option C: Use the build script
    ./build.sh
    ```
 
@@ -45,8 +58,9 @@ A JetBrains IDE plugin for the Nibiru Coding Agent that enables AI-powered codin
    - Select the generated `.zip` file
 
 **Troubleshooting**: If you encounter build errors, see:
-- [QUICK_FIX.md](QUICK_FIX.md) - For Java version issues
+- [QUICK_FIX.md](QUICK_FIX.md) - For Java/Gradle version issues
 - [NETWORK_TROUBLESHOOTING.md](NETWORK_TROUBLESHOOTING.md) - For network/proxy issues
+- [BUILD_WITH_GITHUB_ACTIONS.md](BUILD_WITH_GITHUB_ACTIONS.md) - Build remotely without local network issues
 
 ## Configuration
 
